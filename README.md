@@ -268,8 +268,141 @@ DDL
       DROP USER test01;
       ```   
       
-   - **USER 삭제 시 시 내부의 테이블을 포함한 데이터들이 모두 삭제**
+   - **USER 삭제 시 시 내부의 테이블을 포함한 데이터들이 모두 삭제**   
+   
+   
+ DML
+-------   
+
+## DML(DATA MANIPULATION LANGUAGE) H3   
+   - 데이터 조작 언어
+   - 테이블에 값을 삽입,수정,삭제 하는 역할
+   - INSERT,UPDATE,DELETE   
+   
+   
+## INSERT H2   
+
+   - 테이블에 새로운 행을 추가하는 구문
+   - 추가할 때 마다 테이블의 행 개수가 증가   
+   
+ *표현식*   
  
+   1. INSERT INTO 테이블명( 컬럼명1, 컬럼명2,…) VALUES( 값1, 값2,…..)   
+      - 값을 넣을 컬럼명 입력후 입력한 순서에 맞춰서 값 입력
+      
+   2. INSERT INTO 테이블명 VALUES( 값1, 값2,….)
+      - 테이블 생성시 만든 컬럼 순서대로 모든 값을 입력
+      - 컬럼수와 입력한 값 수가 안 맞으면 **에러발생**   
+      
+  - INSERT에 VALUES 대신 서브 쿼리 사용가능
+  ```
+  INSERT INTO EMP_01(
+  SELECT EMP_ID,
+  EMP_NAME,
+  DEPT_TITLE
+  FROM EMPLOYEE
+  LEFT JOIN DEPARTMENT
+  ON (DEPT_CODE=DEPT_ID)
+  );
+  ```   
+  
+  - **INSERT ALL**   
+   - INSERT시 사용하는 서브쿼리의 테이블이 동일한 경우, 2개이상의 테이블에 INSERT ALL을 이용해    한번에 삽입가능
+   - 단, **서브쿼리의 조건절이 같아야한다.**   
+   
+   EX)
+   ```
+   CREATE TABLE EMP_02
+   AS
+   SELECT EMP_ID,
+   EMP_NAME,
+   DEPT_CODE
+   FROM EMPLOYEE
+   WHERE 1 = 0;
+
+   CREATE TABLE EMP_03
+   AS
+   SELECT EMP_ID,
+   EMP_NAME,
+   JOB_CODE
+   FROM EMPLOYEE
+   WHERE 1 = 0;
+
+   INSERT ALL
+   INTO EMP_02 VALUES(EMP_ID,EMP_NAME,DEPT_CODE)
+   INTO EMP_03 VALUES(EMP_ID,EMP_NAME,JOB_CODE)
+   SELECT EMP_ID,EMP_NAME,DEPT_CODE,JOB_CODE
+   FROM EMPLOYEE
+   WHERE SALARY > 3000000;
+   ```   
+   
+## UPDATE H2
+   - 테이블에 기록된 컬럼의 값을 수정하는 구문
+   - 테이블의 전체 행 개수 변화 없음   
+   
+ *표현식* 
+   - UPDATE 테이블명 SET 컬럼명1 = 변경값1, 컬럼명2 = 변경값2 WHERE 조건식
+   - 조건식을 적지 않는 경우 **데이블 전체 데이터 일괄 변경** 이므로 주의할 것   
+ 
+ ```
+ CREATE TABLE DEPT_COPY
+ AS
+ SELECT * FROM DEPARTMENT;
+ ```   
+ 
+ - 서브쿼리 이용가능
+ ```
+ CREATE TABLE EMP_SALARY
+ AS
+ SELECT EMP_ID,
+ EMP_NAME,
+ SALARY,
+ BONUS FROM
+ EMPLOYEE;
+ ```   
+ 
+ 
+## MERGE H2   
+   - 구조가 같은 두 개의 테이블을 하나로 합치는 기능
+   - 두 테이블에서 지정하는 조건의 값이 존재할시 UPDATE    조건의 값이 없으면 INSERT가 된다.   
+   
+```
+MERGE INTO
+M_TEST01 USING M_TEST02 ON (M_TEST01.ID = M_TEST02.ID)
+WHEN MATCHED THEN -- 위의 ON이 이 TRUE 면
+UPDATE SET -- UPDATE 실행
+M_TEST01.NAME = M_TEST02.NAME
+WHEN NOT MATCHED THEN -- 위의 ON이 이 FALSE 면
+INSERT -- INSERT 실행
+VALUES(M_TEST02.ID, M_TEST02.NAME);
+```   
+
+## DELETE H2   
+   - 테이블의 행을 삭제하는 구문
+   - 테이블의 전체 행 개수 감소    
+   
+  표현식   
+  
+  - DELETE FROM 테이블명 WHERE 조건식
+  - 조건식을 적지 않는 경우 **테이블 전체 데이터가 삭제** 되므로 주의할 것   
+  
+  - FOREIGN KEY 제약조건이 설정되어 있는 경우 삭제 불가능     (ON DELETE RESTRICTED 인 인 경우)
+  - 제약조건을 비활성화 후 후 삭제 가능   
+  
+  
+  
+  
+
+
+   
+   
+   
+   
+   
+   
+   
+   
+   
  OBJECT  
  ---------   
  
@@ -279,20 +412,22 @@ DDL
     - 테이블과 다르게 실질적으로 데이터를 저장하고 있지 않지만, 사용자는 테이블을 사용하는 것과 동일하게 사용 가능
     - 관리자 계정에 VEIW생성.   
     
-    ```
-    GRANT CREATE VIEW TO KH;
-    ```   
+  ```
+  GRANT CREATE VIEW TO KH;
+ 
+  ```   
+  
     
     
    - 해당 계정에서 뷰 생성하기   
    
    
-     ```
-     CREATE VIEW EMP_VIEW
-     AS
-     SELECT EMP_ID, EMP_NAME, EMAIL,PHONE FROM EMPLOYEE;
-     SELECT * FROM EMPLOYEE;
-     ```   
+   ```
+   CREATE VIEW EMP_VIEW
+   AS
+   SELECT EMP_ID, EMP_NAME, EMAIL,PHONE FROM EMPLOYEE;
+   SELECT * FROM EMPLOYEE;
+   ```   
    
    **원본 테이블을 바꾸면 뷰의 데이터도 같이 바뀐다.**    
    
