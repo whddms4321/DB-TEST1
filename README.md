@@ -123,10 +123,150 @@ DDL
         
   1 **컬럼 삭제**
     - '''ALTER TABLE DEPT_COPY
-      DROP COLUMN KNAME;'''
-      ※ 외래키로 참조하고 있는 경우 컬럼삭제 불가
+      DROP COLUMN KN
+      하고 있는 경우 컬럼삭제 불가
       → DROP COLUMN 컬럼명 CASCADE CONSTRAINT를 를 하는 경우 제약조건을 삭제하고 컬
       럼삭제
       
   1 **제약조건 삭제
         
+
+ 3/12
+----------
+
+ OBJECT
+ ---------
+  1. VIEW
+  : SELECT 쿼리의 실행 결과를 화면에 저장한 논리적인 가상 테이블
+  테이블과 다르게 실질적으로 데이터를 저장하고 있지 않지만, 사용자는 테이블을 사용하는 것과 동일하게 사용 가능
+ - 관리자 계정에 VEIW생성.
+ ```
+ GRANT CREATE VIEW TO KH;
+```
+ - 해당 계정에서 뷰 생성.
+   ```
+   CREATE VIEW EMP_VIEW
+   AS
+   SELECT EMP_ID, EMP_NAME, EMAIL,PHONE FROM EMPLOYEE;
+   SELECT * FROM EMPLOYEE;
+   ```
+  ** 원본 테이블을 바꾸면 뷰의 데이터도 같이 바뀐다. ** 
+    
+  - VIEW-DML 명령어 조작이 불가능한 경우
+    1. 뷰 정의에 포함되지 않은 컬럼을 조작하는 경우
+    2. 뷰에 포함안된 컬럼중 베이스가되는 테이블 컬럼이 NOT NULL제약조건이 지정된 경우
+    3. 산술 표현식으로 정의된 경우
+    4. JOIN을 이용해 여러 테이블을 연결한 경우
+    5. DISTINCT를 포함한 경우
+    6. 그룹함수나 GROUP BY절을 포함한 경우
+      
+    - VIEW 옵션
+      1. CREATE OR REPLACE
+      - 생성한 뷰가 없으면 새로 생성하고, 이미 존재하면 갱신
+        -EX) 
+        ```
+        CREATE 
+        
+      2. FORCE/NOFORCE
+      - FORCE옵션은 기본 테이블이 존재하지 않더라도 뷰를 생성
+      3. WITH CHECK OPTION 
+      -옵션을 설정한 컬럼의 값은 수정 불가
+      4. WITH READ ONLY
+      - 뷰에 대해 조회만 가능하고, 삽입,수정,삭제는 하지 못함
+      
+## **SEQUENCE** H2
+- 순차적으로 정수 값을 자동으로 생성하는 객체로, 자동 번호 발생기의 역할
+```
+CREATE SEQUENCE 시퀀스이름
+```
+  1. START WITH 숫자  : 처음 발생시킬 시작 값(기본1)
+  2. INCREMENT BY 숫자 : 다음 값에 대한 증가 치(기본1)
+  3. MAXVALUE 숫자|NOMAXVALUE : 최대값 지정(10^27-1까지 가능)
+  4. MINVALUE 숫자|NOMINYALUE : 최소값 지정 (-10^26까지가능)
+  5. CYCLE/NOCYLE: 시퀀스 최대값 도달 시 CYCLE은 START WITH 값으로 되돌아가고 NOCYCLE은 에러
+  6. CAHCE/NOCAHCE : 메모리상에서 시퀀스값 관리(기본20)
+  
+  - 시퀀스는 수정이 가능하나 단, ** 시작값은 수정이 불가능. **
+  ```
+  alter sequence seq_TEST
+  INCREMENT BY 10
+  MAXVALUE 1000
+  NOCYCLE
+  NOCACHE;
+  ```
+  
+  - NEXTVAL, CURRVAL 사용 가능 경우
+  1. 서브쿼리가 아닌 SELECT 문
+  2. INSERT 문의 SELECT절
+  3. INSERT 문의 VALUE 절
+  4. UPDATE 문의 SET 절
+  
+  
+## INDEX H2
+
+- SQL 명령문의 처리속도를 향상시키기 위해서 컬럼에 대해 생성하는 오라클 객체로 내부구조는 B*트리 형식으로 구성
+
+  INDEX의 장점
+    -검색 속도가 빨라지고 시스템에 걸리는 부하를 줄여서 시스템 전체 성능 향상
+  
+  INDEX의 단점
+    -인덱스를 위한 추가 저장공산 필요
+    -인덱스 새성 시간 필요
+    -데이터 변경작업이 자주일어나는 경우 오히려 성능 저하
+  
+## SYNONYM H2
+- 사용자가 다른 사용자의 객체를 참조할 떄 사용자ID.테이블명 으로 표기
+- 길게 표현되는 것을 동의어(SYNONYM)으로 설정하고 간단하게 사용 가능
+
+- 동의어 종류
+  1. 비공개 동의어
+      - 객체에 대한 접근권한을 부여받은 사용자가 정의한 동의어
+      - 해당 사용자만 사용
+      
+  2. 공개 동의어
+      - 권한을 주는 사용자가 정한 동의어
+      - 모든 사용자가 사용할수 있음
+      
+
+## PL/SQL H2
+    - 오라클 자체에 내장되어 있는 절차적 언어
+    - SQL의 단점을 보완하여 SQL 문장내에서 변수의 정의,조건처리,반복처리등을 지원
+    ```
+    DECLARE
+    선언부    : 선택사항, 변수나 상수를 선언
+    BEGIN
+    실행부 : 선택사항
+    EXCEPTION
+    예외처리부 :
+    END;
+    /
+    ```
+    - 
+    
+    1. PL/SQL의 변수의 종류
+         - 일반(스칼라변수)변수 : 기존 SQL 자료형과 유사값을 대입(:=)하고 변경하여 사용이 가능.
+         - 상수 : 일반변수와 유사하나 CONSTANT 키워드가 자료형 앞에 붙고 선언시 값을 할당해 주어야함.값 지정하면 변경 불가능
+         - %타입 변수: %변수는 불러오는 컬럼의 타입을 불러올수 있다.
+         
+    2. pl/sql 선택문
+       - pl/sql의 모든 문장들은 기술한 순서대로 순차적으로 수행
+       - 문장을 선택적으로 수행하려면 선택문을 사용
+       
+     - 선택문 종류
+       -if
+       -if
+       -if
+       
+       
+     
+   
+
+
+
+
+
+
+
+      
+    
+     
