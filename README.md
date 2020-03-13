@@ -4,6 +4,137 @@ DDL
 - 객체를 만들고, 수정하고 삭제하는 구문,
 - CREATE(생성), ALTER(수정),DROP(삭제)
    
+   
+SET OPERATOR
+=====
+
+## SET OPERATOR(집합연산자) H2   
+   - 두개 이상의 테이블에서 조인을 사용하지 않고, 연관된 데이터를 조회하는    방법
+   - 여러 개의 결과를 하나로 결합하는 방식
+   - 집합연산자는 ROW를 추가하여 데이텨를 표현    
+   
+- 집합 연산자의 성립 조건   
+
+   1. SELECT 절의 컬럼수가 동일해야하고
+   2. SELECT 절의 동일위치에 존재하는 컬럼 데이터가 상호 호환 가능해야함.
+   
+- 두 개 쿼리문을 각 집합연산자를 이용해 처리    
+```
+SELECT EMP_ID,EMP_NAME,
+DEPT_CODE, SALARY FROM
+EMPLOYEE
+WHERE DEPT_CODE = 'D5’;    
+
+   
+SELECT
+EMP_ID,EMP_NAME,DEPT_CODE,
+SALARY FROM EMPLOYEE
+WHERE SALARY > 3000000;
+```   
+   1. UNION(중복된 영역 제외하고 합)      
+   ```
+   SELECT EMP_ID,EMP_NAME,
+   DEPT_CODE, SALARY FROM
+   EMPLOYEE
+   WHERE DEPT_CODE = 'D5'
+   UNION
+   SELECT
+   EMP_ID,EMP_NAME,DEPT_CODE,
+   SALARY FROM EMPLOYEE
+   WHERE SALARY > 3000000;   
+   ```   
+   
+   - __심봉선, 대북혼 중복데이터 1 개만출력__
+   - __EMP_ID로 로 오름 차순 정렬__   
+      
+   2. UNION ALL(중복데이터도 포함해 합)   
+      
+   ```
+   SELECT EMP_ID,EMP_NAME,
+   DEPT_CODE, SALARY FROM
+   EMPLOYEE
+   WHERE DEPT_CODE = 'D5'
+   UNION ALL
+   SELECT
+   EMP_ID,EMP_NAME,DEPT_CODE,
+   SALARY FROM EMPLOYEE
+   WHERE SALARY > 3000000;
+   ```   
+   
+   - __심봉선, 대북혼 중복데이터 모두 출력__   
+      
+      
+   3. INTERSECT(합집합)     
+      
+   ```
+   SELECT EMP_ID,EMP_NAME,
+   DEPT_CODE, SALARY FROM
+   EMPLOYEE
+   WHERE DEPT_CODE = 'D5’
+   INTERSECT
+   SELECT
+   EMP_ID,EMP_NAME,DEPT_CODE,
+   SALARY FROM EMPLOYEE
+   WHERE SALARY > 3000000;
+   ```   
+  
+      
+   - __심봉선, 대북혼 중복데이터만 출력__   
+   
+      
+   4. MINUS(차집합)     
+   
+   ```
+   SELECT EMP_ID,EMP_NAME,
+   DEPT_CODE, SALARY FROM
+   EMPLOYEE
+   WHERE DEPT_CODE = 'D5’
+   MINUS
+   SELECT
+   EMP_ID,EMP_NAME,DEPT_CODE,
+   SALARY FROM EMPLOYEE
+   WHERE SALARY > 3000000;
+   ```   
+   
+   - __첫번째 SELECT 문에서 심봉선, 대북혼 중복데이터 제외하고 출력__   
+   
+   
+## SUBQUERY H2   
+   - 하나의 SELECT 문장 안에 포함된 또 하나의 SELECT 문장
+   - 서브쿼리는 메인쿼리 실행 전 한번만 실행   
+   
+   *서브쿼리조건*   
+      
+      1. 서브쿼리는 반드시 소괄호..
+      2. 서브쿼리는 연산자의 오른쪽에 위치
+      3. 서브쿼리 내에서 ORDER BY 문법은 지원 X(예외O)
+      4. 서브쿼리와 비교할 항목은 서브쿼리의 SELECT한 학목의 개수와    자료형이 일치해야함.
+      
+
+ - SUBQUERY 유형   
+   1. 단일행 SUBQUERY   
+   ```
+   SELECT EMP_ID,
+   EMP_NAME,
+   DEPT_CODE,
+   SALARY
+   FROM EMPLOYEE
+   WHERE
+   SALARY >=
+   (SELECT AVG(SALARY)
+   FROM EMPLOYEE);
+   ```   
+   
+   2. 
+      
+
+  
+   
+   
+   
+
+
+   
   ## **CREATE**   
   
     : DDL의 한 종류로 테이블이나 인덱스,유저 등 다양한 데이터베이스 객체를 생성하는 구문
