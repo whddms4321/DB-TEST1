@@ -792,6 +792,7 @@ SELECT * FROM TEI_MEMBER;
          - SELECT * FROM USER_COL_COMMENTS; -- COMMENTS의 정보를 알수 있다.    
       
     
+    
   
 
 
