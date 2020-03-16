@@ -161,21 +161,23 @@ WHERE SALARY > 3000000;
       );
     ```  
     - 테이블에 주석 달기   
-        - ```
-          COMMENT ON COLUMNN 테이블명.컬럼명 IS '주석내용';
-          ```
+    ```
+    COMMENT ON COLUMNN 테이블명.컬럼명 IS '주석내용';
+    ```   
+    
 
-    5. **제약 조건**         
-      - 테이블 작성 시 각 컬럼에 대한 기록에 대해 제약 조건 설정 가능
-      - 데이터 무결성을 지키기 위한 제한된 조건   
+ 5. **제약조건**       
 
-        제약조건 | 설명
-        ---|:---:|
-        'NOT NULL | 데이터에 NULL을 허용하지 않는다.
-        'UNIQUE' | 중복된 값을 허용하지 않는다.
-        'PRIMARY KEY' | NOT NULL + UNIQUE, 컬럼의 고유식별자로 사용됨.
-        'FOREIGN KEY' | 참조되는 테이블의 컬럼 값이 존재하면 허용한다.
-        'CHECK' | 저장 가능한데이터 값의 범위나 조건을 지정하여 설정한 값만 허용한다.
+   - 테이블 작성 시 각 컬럼에 대한 기록에 대해 제약 조건 설정 가능   
+   - 데이터 무결성을 지키기 위한 제한된 조건      
+
+     제약조건 | 설명
+     ---|:---:|
+     'NOT NULL | 데이터에 NULL을 허용하지 않는다.
+     'UNIQUE' | 중복된 값을 허용하지 않는다.
+     'PRIMARY KEY' | NOT NULL + UNIQUE, 컬럼의 고유식별자로 사용됨.
+     'FOREIGN KEY' | 참조되는 테이블의 컬럼 값이 존재하면 허용한다.
+     'CHECK' | 저장 가능한데이터 값의 범위나 조건을 지정하여 설정한 값만 허용한다.
 
 
         1. **NOT NULL**  
@@ -765,7 +767,32 @@ SELECT * FROM TEI_MEMBER;
 
 
 
+--- 3/16일자
 
+## 데이터딕셔너리 H2   
+
+   - 자원을 효율적으로 관리하기 위한 다양한 정보를 저장하는 시스템 테이블   
+   - 사용자가 테이블을 생성하거나, 사용자변경등의 작업을 할 때 데이터베이스        서버에 의해 자동으로 갱신되는 테이블     
+   
+1. __데이터딕셔너리 종류__     
+
+   1. DBA_XXXXX   
+      - DB 관리자만 접근이 가능한 객체 등의 정보를 조회
+   2. ALL_XXXXX      
+      - 자신의 계정이 소유하거나 권한을 부여받은 객체 등에 관한 정보 조회
+   3. USER_XXXXX     
+      - 자신의 계정이 소유한 객체 등에 관한 정보 조회     
+      1. USER_의 종류들    
+         - SELECT * FROM USER_TABLES;   
+         - SELECT * FROM USER_VIEWS;   
+         - SELECT * FROM USER_SEQUENCES;   
+         - SELECT * FROM USER_TRIGGER;   
+         - SELECT * FROM USER_CONS_COLUMNS;  --모든 테이블의 컬럼의 제약조건을 볼수 잇다.   
+         - SELECT * FROM USER_CONSTRAINTS; -- 제약조건에 대한 정보를 자세히 볼수 있다.   
+         - SELECT * FROM USER_COL_COMMENTS; -- COMMENTS의 정보를 알수 있다.    
+      
+    
+  
 
 
 
