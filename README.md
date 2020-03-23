@@ -31,7 +31,7 @@ EMP_ID,EMP_NAME,DEPT_CODE,
 SALARY FROM EMPLOYEE
 WHERE SALARY > 3000000;
 ```   
-   1. UNION(중복된 영역 제외하고 합)      
+   1. UNION(중복된 영역 제외하고 합)        
    ```
    SELECT EMP_ID,EMP_NAME,
    DEPT_CODE, SALARY FROM
@@ -99,7 +99,7 @@ WHERE SALARY > 3000000;
    - __첫번째 SELECT 문에서 중복데이터 제외하고 출력__   
    
    
-## SUBQUERY H2   
+## SUBQUERY    
    - 하나의 SELECT 문장 안에 포함된 또 하나의 SELECT 문장
    - 서브쿼리는 메인쿼리 실행 전 한번만 실행   
    
@@ -112,7 +112,7 @@ WHERE SALARY > 3000000;
       
 
  - SUBQUERY 유형   
-   1. 단일행 SUBQUERY   
+   1. 단일행 SUBQUERY : 서브쿼리 조회값 개수가 1개인 경우     
    ```
    SELECT EMP_ID,
    EMP_NAME,
@@ -125,7 +125,55 @@ WHERE SALARY > 3000000;
    FROM EMPLOYEE);
    ```   
    
-   2. 
+   2. 다중행 서브쿼리 : 서브쿼리의 조회값 개수가 행이 여러개인 경우    
+   ```
+   SELECT EMP_ID,
+   EMP_NAME,
+   DEPT_CODE,
+   SALARY
+   FROM EMPLOYEE
+   WHERE
+   SALARY IN
+   (SELECT MAX(SALARY)
+   FROM EMPLOYEE
+   GROUP BY DEPT_CODE);
+   ```   
+   ANY : 서브 쿼리의 결과 중에서 하나라도 참이면 참   
+      - > ANY : 최소값 보다 크면 / => ANY : 최소값 보다 크거나 같으면  
+      - < ANY : 최대값 보다 크면 / <= ANY : 최대값 보다 작거나 같으면  
+      - = ANY : IN 과 과 같은 효과 / != ANY : NOT IN과 과 같은 효과   
+   ```   
+   SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY
+   FROM EMPLOYEE WHERE SALARY > ANY(2000000, 5000000);
+   ```   
+   ALL : 서브 쿼리의 결과가 모두 참이면 참  
+      - > ALL : 최대값 보다 크면 / => ALL : 최대값 보다 크거나 같으면  
+      - < ALL : 최소값 보다 크면 / <= ALL : 최소값 보다 작거나 같으면  
+   ```   
+   SELECT EMP_ID, EMP_NAME, DEPT_CODE, SALARY
+   FROM EMPLOYEE WHERE SALARY > ALL(2000000, 5000000);
+   ```   
+   
+   3. 다중열 서브쿼리 : 서브쿼리의 조회값 개수가 컬럼이 여러 개인 경우    
+   ```
+   SELECT EMP_NAME,
+   JOB_CODE,
+   DEPT_CODE,
+   HIRE_DATE
+   FROM EMPLOYEE
+   WHERE
+   (DEPT_CODE,JOB_CODE) IN
+   (SELECT DEPT_CODE,
+   JOB_CODE
+   FROM EMPLOYEE WHERE SUBSTR(EMP_NO,8,1)=2 AND ENT_YN = ‘Y’);
+   ```   
+   
+   4. 다중행 다중열 서브쿼리 : 서브쿼리 조회값 행,컬럼수가 여러개인 경우    
+   5. 상관 서브쿼리(상호연관) : 메인 쿼리가 바뀔때, 서브쿼리 결과값도 바뀌는 경우   
+   
+   5. 스칼라 서브쿼리 : 상관커리이면서 결과값이 1개인 경우   
+   
+   
       
 
   
@@ -154,16 +202,16 @@ WHERE SALARY > 3000000;
     
   4. **테이블 생성**   
     ```
-    - CREATE TABLE 테이블명 (   
-        ID VARCHAR2(20),   
-        PW VARCHAR2(20),   
-        NAME VARCHAR2(40)   
-      );
-    ```  
-    - 테이블에 주석 달기   
+    CREATE TABLE 테이블명 (   
+     ID VARCHAR2(20),   
+     PW VARCHAR2(20),   
+     NAME VARCHAR2(40)   
+    );
+    ```   
+    테이블에 주석 달기   
     ```
     COMMENT ON COLUMNN 테이블명.컬럼명 IS '주석내용';
-    ```   
+    ```      
     
 
  5. **제약조건**       
@@ -180,105 +228,105 @@ WHERE SALARY > 3000000;
      'CHECK' | 저장 가능한데이터 값의 범위나 조건을 지정하여 설정한 값만 허용한다.
 
 
-        1. **NOT NULL**  
-        
-            ```
-            CREATE TABLE USER_NOCONS(
-            USER_NO NUMBER NOT NULL
-            );
-            ```     
-          **NOT NULL은 데이터레벨에서는 사용 X**   
-          
-           
-        2. **UNIQUE**   
-        
-          ```
-          CREATE TABLE USER_NO(
-          USER_ID VARCHAR2(20) UNIQUE
-          );
-          ```   
-          
-          또는   
-          
-          ```
-          CREATE TABLE USER_NO(
-          USER_ID VARCHAR2(20),
-          UNIQUE(USER_ID
-          );
-          ```         
-          
-        3. **PRIMARY KEY**   
-        
-          ```
-          CREATE TABLE NO(
-            USER_NO NUMBER PRIMARY KEY
-          );
-          ```      
-          
-          또는   
-          
-          ```
-          CREATE TABLE NO(
-            USER_NO NUMBER
-            PRIMARY KEY(USER_NO)
-          );
-          ```      
-          
-        4. __FOREIGN KEY__      
-        
-           - 참조 무결성을 유지하기 위한 제약조건
-           - 참조된 다른 테이블이 제공하는 값만 사용할 수 있도록 제한하는 것   
-           
-           ```
-           CREATE TABLE NO(
-            USER_NO NUMBER
-            PRIMARY KEY(USER_NO)
-           );
-           ```      
-           
-           - 참조하여 테이블 작성   
-           
-            ```   
-            CREATE TABLE NO2(
-              PRODOCTOR_NO NUMBER REFERENCSE NO(USER_NO)
-            );
-            ```      
-            
-            또는   
-            
-            ```
-            CREATE TABLE NO2(
-              PRODOCTOR_NO NUMBER ,
-              FOREIGN KEY (PRODOCTOR_NO) REFERENCSE NO(USER_NO)
-            );
-            ```  
-            
-            - **ON DELETE SET NULL과 ON DELETE CASCADE**
-               - 둘 모두 FOREIGN 뒤에 쓰게되면 참조하는 테이블이 삭제가 가능하다.
-               - ON DELETE SET NULL은 참조된 컬럼의 데이터 삭제시 해당 컬럼만 삭제하고 나머지 데이터 유지   
-               - ON DELETE CASCASE는 참조된 컬럼의 데이터 삭제시 데이터 전부 소거
-   
-         5. **CHECK**    
-         
-         
-            - 해당 컬럼에 입력되거나 수정되는 값을 체크, 설정된 값 이외의 값이면 에러 발생   
-            
-            ```
-            CREATE TABLE USER(
-              GENDER CHAR(6) CHECK (GENDER IN('남','여','중성'))
-            );
-            ```   
-            
-            
-       **SUBQUERY를 이용해 테이블 작성**   
-       
-          ```
-          CREATE TABLE EMPLOYEE_COPY
-          AS
-          SELECT EMP_ID,EMP_NAME,DEPT_TITLE,JOB_NAME FROM EMPLOYEE   
-          LEFT JOIN DEPARTMENT ON (DEPT_CODE = DEPT_ID)
-          LEFT JOIN JOB USING(JOB_CODE);
-          ```      
+     1. **NOT NULL**  
+
+         ```
+         CREATE TABLE USER_NOCONS(
+         USER_NO NUMBER NOT NULL
+         );
+         ```     
+       **NOT NULL은 데이터레벨에서는 사용 X**   
+
+
+     2. **UNIQUE**   
+
+       ```
+       CREATE TABLE USER_NO(
+       USER_ID VARCHAR2(20) UNIQUE
+       );
+       ```   
+
+       또는   
+
+       ```
+       CREATE TABLE USER_NO(
+       USER_ID VARCHAR2(20),
+       UNIQUE(USER_ID
+       );
+       ```         
+
+     3. **PRIMARY KEY**   
+
+       ```
+       CREATE TABLE NO(
+         USER_NO NUMBER PRIMARY KEY
+       );
+       ```      
+
+       또는   
+
+       ```
+       CREATE TABLE NO(
+         USER_NO NUMBER
+         PRIMARY KEY(USER_NO)
+       );
+       ```      
+
+     4. __FOREIGN KEY__      
+
+        - 참조 무결성을 유지하기 위한 제약조건
+        - 참조된 다른 테이블이 제공하는 값만 사용할 수 있도록 제한하는 것   
+
+     ```
+     CREATE TABLE NO(
+      USER_NO NUMBER
+      PRIMARY KEY(USER_NO)
+     );
+     ```      
+
+        - 참조하여 테이블 작성   
+
+      ```   
+      CREATE TABLE NO2(
+        PRODOCTOR_NO NUMBER REFERENCSE NO(USER_NO)
+      );
+      ```      
+
+         또는   
+
+      ```
+      CREATE TABLE NO2(
+        PRODOCTOR_NO NUMBER ,
+        FOREIGN KEY (PRODOCTOR_NO) REFERENCSE NO(USER_NO)
+      );
+      ```  
+
+         - **ON DELETE SET NULL과 ON DELETE CASCADE**
+         - 둘 모두 FOREIGN 뒤에 쓰게되면 참조하는 테이블이 삭제가 가능하다.
+         - ON DELETE SET NULL은 참조된 컬럼의 데이터 삭제시 해당 컬럼만 삭제하고 나머지 데이터 유지   
+         - ON DELETE CASCASE는 참조된 컬럼의 데이터 삭제시 데이터 전부 소거
+
+      5. **CHECK**    
+
+
+         - 해당 컬럼에 입력되거나 수정되는 값을 체크, 설정된 값 이외의 값이면 에러 발생   
+
+      ```
+      CREATE TABLE USER(
+        GENDER CHAR(6) CHECK (GENDER IN('남','여','중성'))
+      );
+      ```   
+
+
+    **SUBQUERY를 이용해 테이블 작성**   
+
+    ```
+    CREATE TABLE EMPLOYEE_COPY
+    AS
+    SELECT EMP_ID,EMP_NAME,DEPT_TITLE,JOB_NAME FROM EMPLOYEE   
+    LEFT JOIN DEPARTMENT ON (DEPT_CODE = DEPT_ID)
+    LEFT JOIN JOB USING(JOB_CODE);
+    ```      
           
  ## ALTER H2   
  
@@ -288,62 +336,63 @@ WHERE SALARY > 3000000;
   
   1. **컬럼 추가**   
   
-    - ```
-      ALTER TABLE DEPT_COPY 
-      ADD(KNAME VARCHAR2(20));
-      ```   
-    - ```
-      ALTER TABLE DEPT_COPY
-      ADD (HNAME VARCHAR2(20) DEFAULT ‘kh’);
-      ```   
+  ```
+  ALTER TABLE DEPT_COPY 
+  ADD(KNAME VARCHAR2(20));
+  ```      
+  ```
+  ALTER TABLE DEPT_COPY
+  ADD (HNAME VARCHAR2(20) DEFAULT ‘kh’);
+  ```     
 
   2. **컬럼 수정**   
   
-    - '''
-      ALTER TABLE DEPT_COPY  
-      MODIFY DEPT_ID CHAR(3)    
-      MODIFY DEPT_TITLE VARCHAR2(30)
-      '''   
+  '''
+  ALTER TABLE DEPT_COPY  
+  MODIFY DEPT_ID CHAR(3)    
+  MODIFY DEPT_TITLE VARCHAR2(30)
+  '''   
     
     
   3. **제약조건 확인**   
   
-    - '''
-    SELECT UC.CONSTRAINT_NAME, -- 제약조건 이름
-           UC.CONSTRAINT_TYPE, -- 제약조건 타입
-           UC.TABLE_NAME, -- 테이블이름
-           UCC.COLUMN_NAME, -- 컬럼이름
-           UC.SEARCH_CONDITION -- 제약조건 설명
-           FROM USER_CONSTRAINTS UC
-           JOIN USER_CONS_COLUMNS UCC ON (UC.CONSTRAINT_NAME =
-           UCC.CONSTRAINT_NAME)
-           WHERE UC.TABLE_NAME = ‘DEPT_COPY’; -- 테이블명(반드시 대문자로 기입)
-       '''   
+  '''
+  SELECT UC.CONSTRAINT_NAME, -- 제약조건 이름
+  UC.CONSTRAINT_TYPE, -- 제약조건 타입
+  UC.TABLE_NAME, -- 테이블이름
+  UCC.COLUMN_NAME, -- 컬럼이름
+  UC.SEARCH_CONDITION -- 제약조건 설명
+  FROM USER_CONSTRAINTS UC
+  JOIN USER_CONS_COLUMNS UCC ON (UC.CONSTRAINT_NAME =
+  UCC.CONSTRAINT_NAME)
+  WHERE UC.TABLE_NAME = ‘DEPT_COPY’; -- 테이블명(반드시 대문자로 기입)
+  '''   
        
         
   4. **제약조건 추가**   
   
-    - '''
-      ALTER TABLE DEPT_COPY
-      ADD CONSTRAINT DCOPY_ID_PK PRIMARY KEY(DEPT_ID)  --CONSTRAINT:  제약조건
-      ADD CONSTRAINT DCOPY_TITLE_UNQ UNIQUE(DEPT_TITLE)
-      MODIFY HNAME(컬럼명) CONSTRAINT DCOPY_HNAME_NN(제약이름) NOT NULL;  
-      '''   
+  '''
+  ALTER TABLE DEPT_COPY
+  ADD CONSTRAINT DCOPY_ID_PK PRIMARY KEY(DEPT_ID)  --CONSTRAINT:  제약조건
+  ADD CONSTRAINT DCOPY_TITLE_UNQ UNIQUE(DEPT_TITLE)
+  MODIFY HNAME(컬럼명) CONSTRAINT DCOPY_HNAME_NN(제약이름) NOT NULL;  
+  '''     
  
-      **NOT NULL은 은 MODIFY로 로 추가**   
+  **NOT NULL은 은 MODIFY로 로 추가**   
       
         
   5. **컬럼 삭제**   
   
-    - '''
-      ALTER TABLE DEPT_COPY
-      DROP COLUMN KN
-      ```
-      *하고 있는 경우 컬럼삭제 불가*
-        - DROP COLUMN 컬럼명 CASCADE CONSTRAINT를 를 하는 경우 제약조건을 삭제하고 컬럼삭제   
+  '''
+  ALTER TABLE DEPT_COPY
+  DROP COLUMN KN
+  ```  
+  *하고 있는 경우 컬럼삭제 불가*  
+  
+    - DROP COLUMN 컬럼명 CASCADE CONSTRAINT를 를 하는 경우 제약조건을 삭제하고 컬럼삭제   
         
       
-  6. **제약조건 삭제**   
+  6. **제약조건 삭제**     
   
    ```
    ALTER TABLE DEPT_COPY
@@ -357,51 +406,54 @@ WHERE SALARY > 3000000;
    
   7. **컬럼 이름 변경**   
      
-    ```
-    ALTER TABLE DEPT_COPY
-    RENAME COLUMN HNAME TO KHNAME;
-    ```   
+  ```
+  ALTER TABLE DEPT_COPY
+  RENAME COLUMN HNAME TO KHNAME;
+  ```   
     
   8. **제약조건 이름 변경**   
      
-    ```
-    ALTER TABLE DEPT_COPY
-    RENAME CONSTRAINT SYS_C008124 TO DID_NN;
-    ALTER TABLE DEPT_COPY
-    RENAME CONSTRAINT SYS_C008125 TO LID_NN;
-    ```   
+  ```
+  ALTER TABLE DEPT_COPY
+  RENAME CONSTRAINT SYS_C008124 TO DID_NN;
+  ALTER TABLE DEPT_COPY
+  RENAME CONSTRAINT SYS_C008125 TO LID_NN;
+  ```   
     
   9. **테이블 이름 변경**   
      
-     ```
-     ALTER TABLE DEPT_COPY
-     RENAME TO ALTER_TEST;
-     ```   
+  ```
+  ALTER TABLE DEPT_COPY
+  RENAME TO ALTER_TEST;
+  ```   
         
         
  ## DROP H2   
  
    - DDL의 한 종류로 CREATE로 정의된 객체를 삭제할 때 사용    
       
-   -테이블 삭제   
-    ```
-    DROP TABLE ALTER_TEST;
-    ```   
+   -테이블 삭제    
+   
+ ```
+ DROP TABLE ALTER_TEST;
+ ```     
        
        
-   - 제약조건으로 다른 테이블에서 참조하고 있다면 삭제 안됨
-   ```
-   DROP TABLE ALTER_TEST CASCADE CONSTRAINT;
-   ```   
+   - 제약조건으로 다른 테이블에서 참조하고 있다면 삭제 안됨   
+   
+ ```
+ DROP TABLE ALTER_TEST CASCADE CONSTRAINT;
+ ```   
       
    → 테이블을 삭제 하면서 연결된 제약조건도 모두 삭제   
    
-   - 사용자 삭제(관리자 계정으로 접속)   
-      ```
-      DROP USER test01;
-      ```   
+   - 사용자 삭제(관리자 계정으로 접속)     
+   
+ ```
+ DROP USER test01;
+ ```   
       
-   - **USER 삭제 시 시 내부의 테이블을 포함한 데이터들이 모두 삭제**   
+  - **USER 삭제 시 시 내부의 테이블을 포함한 데이터들이 모두 삭제**   
    
    
  DML
@@ -739,10 +791,11 @@ VALUES(M_TEST02.ID, M_TEST02.NAME);
      
    
 
-## TRIGGER H2   
+## TRIGGER   
    
    - 데이터베이스가 미리 정해 놓은 조건을 만족하거나 어떠한 동작이 수행되면 자동적으로     수행되는 행동(TRIGGER: 연쇄반응)
-   - 
+   - 트리거는 테이블이나 뷰가 INSERT, UPDATE, DELETE 등의 DML문에 의해     데이터가 입력,수정,삭제 될 경우 자동으로 실행  
+   - 실시간으로 처리를 가능하게 해준다.   
    
 ```
 CREATE TABLE TRI_MEMBER
@@ -761,11 +814,49 @@ INSERT INTO TRI_MEMBER VALUES(101,'이다현',69000000);
 INSERT INTO TRI_MEMBER VALUES(102,'박태규',90000000);   
 INSERT INTO TRI_MEMBER VALUES(103,'김병호',72000000);   
 INSERT INTO TRI_MEMBER VALUES(104,'이윤수',20000000);   
-SELECT * FROM TEI_MEMBER;
+SELECT * FROM TEI_MEMBER;  
+  
+CREATE OR REPLACE TRIGGER MEM_DEL_TRG
+AFTER DELETE    --트리거 동작 시점
+ON TRI_MEMBER
+FOR EACH ROW
+BEGIN
+    INSERT INTO TRI_DEL_MEMBER VALUES(
+    :OLD.EMP_ID, :OLD.EMP_NAME,SYSDATE
+    );                --삭제된 사번, 삭제된 이름,SYSDAT
+END;  
 
 ```   
 
+__Trigger 구성 요소__   
 
+1. 트리거 실행 시점  
+   - 트리거 실행 시점을 이벤트 전(before)이나 후(after)로 지정   
+2. 트리거 이벤트   
+   - 사용자가 어떤 dml(insert,update,delete)문을 실행했을 때 트리거를     발생시킬 것인지를 결정   
+3. 몸체   
+   - 트리거 동작 로직으로 begin~ end 안에 작성   
+4. 유형   
+   - 행 레벨 트리거: dml에 의해서 여러 개의 행이 변경되면 각행이 변경될 떄마다    트리거를 발생시키는 방법  
+   - 문장 레벨 트리거: DML을 실행하면 트리거가 한번 발생   
+   - **for each row 준장이 정의되어 있으면 행 레벨 트리거, 생략되어 있으면 문장 레벨트리거**    
+   
+__TRigger 바인드 변수__   
+   - :new 새로 입력된 데이터(insert,update시 존재)  
+   - :old 기존 데이터  
+     
+   - :new.컬럼명 sql반영 후의 컬럼 데이터  
+   - :old.컬럼명 sql반영 전의 컬럼 데이터
+   - delete 경우 삭제이기때문에 old만 사용가능
+
+```
+INSERT INTO TRI_DEL_MEMBER VALUES(
+:OLD.EMP_ID,:OLD.EMP_NAME,SYSDATE
+);
+```   
+
+   
+   
 
 --- 3/16일자
 
@@ -782,7 +873,8 @@ SELECT * FROM TEI_MEMBER;
       - 자신의 계정이 소유하거나 권한을 부여받은 객체 등에 관한 정보 조회
    3. USER_XXXXX     
       - 자신의 계정이 소유한 객체 등에 관한 정보 조회     
-      1. USER_의 종류들    
+      1. USER_의 종류들   
+      
          - SELECT * FROM USER_TABLES;   
          - SELECT * FROM USER_VIEWS;   
          - SELECT * FROM USER_SEQUENCES;   
